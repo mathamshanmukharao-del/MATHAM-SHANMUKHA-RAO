@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Royalty &amp; Foundation Quantity Calculator</title>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--tx:#1b1f24;--mut:#667085;--bd:#d9dde3;--ac:#1d4ed8;--hl:#eef3ff;--err-bg:#fef2f2;--err-tx:#991b1b;--err-bd:#fecaca;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171c;--card:#1d2128;--tx:#e8eaed;--mut:#9aa3af;--bd:#343a44;--ac:#6b93ff;--hl:#232b3d;--err-bg:#3b1111;--err-tx:#fca5a5;--err-bd:#7f1d1d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14171c;--card:#1d2128;--tx:#e8eaed;--mut:#9aa3af;--bd:#343a44;--ac:#6b93ff;--hl:#232b3d;--err-bg:#3b1111;--err-tx:#fca5a5;--err-bd:#7f1d1d;color-scheme:dark}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px}
+.wrap{max-width:760px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:18px;margin-bottom:14px}
+h1{font-size:20px;margin:0 0 4px}h2{font-size:15px;margin:0 0 12px}
+p.s{color:var(--mut);font-size:13px;margin:0}
+label{display:block;font-size:13px;font-weight:600;margin:10px 0 5px}
+input,select{width:100%;box-sizing:border-box;font-size:16px;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+input:focus,select:focus{outline:2px solid var(--ac)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.g3{grid-template-columns:1fr 1fr}}
+.big div{background:var(--hl);border-radius:10px;padding:14px;text-align:center}
+.big b{display:block;font-size:26px;color:var(--ac)}.big span{font-size:13px;color:var(--mut)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px;border-bottom:1px solid var(--bd);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+tr.t td{font-weight:700}
+button{padding:10px 14px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;font-size:14px;cursor:pointer}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac);margin-top:14px;width:100%}
+.pv{background:var(--hl);border-radius:8px;padding:10px;margin-top:12px;font-size:13px;color:var(--mut)}
+.x{padding:3px 9px}
+.toast{display:none;background:var(--err-bg);color:var(--err-tx);border:1px solid var(--err-bd);padding:10px 14px;border-radius:8px;font-size:13px;margin-top:10px}
+</style></head>
+<body>
+<div class="wrap">
+<div class="card">
+  <h1>Royalty &amp; Foundation Quantity Calculator</h1>
+  <p class="s">BTPS – Guttur 400kV DC TL · KPTCL</p>
+</div>
+
+<div class="card">
+  <h2>1. Tower Foundation Quantities</h2>
+  <div class="g3">
+    <div><label for="ty">Type of Tower</label><select id="ty"></select></div>
+    <div><label for="fd">Foundation</label><select id="fd"></select></div>
+    <div><label for="ex">Extension</label><select id="ex"></select></div>
+  </div>
+  <div class="g2">
+    <div><label for="no">No. of Towers (Locations)</label><input id="no" type="number" inputmode="numeric" min="1" value="1"></div>
+    <div></div>
+  </div>
+  <div class="pv" id="pv"></div>
+  <button class="p" id="add">+ Add to list</button>
+</div>
+
+<div class="card" id="lc" style="display:none">
+  <h2>Added Towers</h2>
+  <div class="tbl"><table><thead><tr><th>Tower</th><th>Foundation</th><th>Ext.</th><th>Nos</th><th></th></tr></thead><tbody id="lb"></tbody></table></div>
+</div>
+
+<div class="card">
+  <h2>Total Quantities</h2>
+  <div class="tbl"><table><tbody>
+    <tr><td>Excavation (Cmtr)</td><td id="T0">0.00</td></tr>
+    <tr><td>RCC Concrete – M20 (Cmtr)</td><td id="T1">0.00</td></tr>
+    <tr><td>Lean / PCC – M10 (Cmtr)</td><td id="T2">0.00</td></tr>
+    <tr><td>Cement (Bags)</td><td id="T3">0</td></tr>
+    <tr><td>Coarse Aggregate (Cmtr)</td><td id="T4">0.00</td></tr>
+    <tr><td>Fine Aggregate (Cmtr)</td><td id="T5">0.00</td></tr>
+    <tr><td>Steel (Kg)</td><td id="T6">0.0</td></tr>
+    <tr class="t"><td>Steel (MT)</td><td id="T7">0.000</td></tr>
+    <tr><td>Shuttering Area (Sqm)</td><td id="T8">0.00</td></tr>
+  </tbody></table></div>
+  <p class="s" id="na" style="margin-top:8px"></p>
+</div>
+
+<div class="card">
+  <h2>2. Royalty Calculation – Sand &amp; Jelly</h2>
+  <p class="s">Auto-filled from the tower list above. You can also type quantities directly.</p>
+  <div class="g2">
+    <div><label for="pcc">PCC 1:3:6 (M10) – Cmtr</label><input id="pcc" type="number" inputmode="decimal" step="any" min="0" placeholder="e.g. 8.840"></div>
+    <div><label for="rcc">RCC 1:1.5:3 (M20) – Cmtr</label><input id="rcc" type="number" inputmode="decimal" step="any" min="0" placeholder="e.g. 63.940"></div>
+  </div>
+  <div class="g2 big" style="margin-top:14px">
+    <div><span>SAND</span><b id="sMT">0.00</b><span>MT</span></div>
+    <div><span>JELLY</span><b id="jMT">0.00</b><span>MT</span></div>
+  </div>
+  <div class="tbl" style="margin-top:14px"><table>
+    <thead><tr><th>Item</th><th>Concrete (Cmtr)</th><th>Const. / Cmt</th><th>Qty (Cmtr)</th></tr></thead>
+    <tbody>
+      <tr><td>PCC M10 – Sand</td><td id="a1"></td><td>0.56</td><td id="r1"></td></tr>
+      <tr><td>PCC M10 – Jelly</td><td id="a2"></td><td>0.69</td><td id="r2"></td></tr>
+      <tr><td>RCC M20 – Sand</td><td id="a3"></td><td>0.46</td><td id="r3"></td></tr>
+      <tr><td>RCC M20 – Jelly</td><td id="a4"></td><td>0.69</td><td id="r4"></td></tr>
+      <tr class="t"><td>TOTAL SAND</td><td></td><td>×1.72 MT</td><td><span id="tS">0.00</span> Cmtr = <span id="tSm">0.00</span> MT</td></tr>
+      <tr class="t"><td>TOTAL JELLY</td><td></td><td>×1.80 MT</td><td><span id="tJ">0.00</span> Cmtr = <span id="tJm">0.00</span> MT</td></tr>
+    </tbody></table>
+  </div>
+  <p class="s" style="margin-top:10px">Conversion: Sand 1 Cmtr = 1.72 MT; Jelly 1 Cmtr = 1.80 MT. Tower sheet: Concrete = M20, Lean concrete = M10.</p>
+  <button id="rs" style="margin-top:12px">Reset all</button>
+</div>
+
+<div class="card">
+  <h2>3. JMC Form – Generate PDF</h2>
+  <p class="s">Select the tower in section 1, press "Fill from selected tower", enter the remaining details and tap Generate PDF.</p>
+  <div class="g2">
+    <div><label>Location No.</label><input id="jl"></div>
+    <div><label>Type of Tower</label><input id="jt"></div>
+    <div><label>Date of Excavation</label><input id="jde" type="date"></div>
+    <div><label>Soil Classified As</label><input id="jsc" placeholder="e.g. WBC / DFR / HR"></div>
+    <div><label>Classification Approved by</label><input id="jap" value="EE PD Ballari"></div>
+    <div><label>Date of Approval</label><input id="jda" type="date"></div>
+    <div style="grid-column:1/-1"><label>Name of Agency</label><input id="jag" value="M/s Megha Engineering &amp; Infrastructures Ltd, Hyderabad"></div>
+  </div>
+  <h2 style="margin-top:16px">Depth excavated in various types of soil (m)</h2>
+  <div class="tbl"><table id="dt"></table></div>
+  <div class="g2">
+    <div><label>Total Excavation Qty (Cmtr)</label><input id="jte" type="number" step="any"></div>
+    <div></div>
+  </div>
+  <p class="s">Excavation per soil type = total excavation shared in proportion to the depth entered for each soil type.</p>
+  <h2 style="margin-top:16px">Foundation &amp; Erection details</h2>
+  <div class="g2">
+    <div><label>Date of Concreting</label><input id="jdc" type="date"></div>
+    <div><label>Date of Inspection of Concreting</label><input id="jdi" type="date"></div>
+    <div><label>PCC-M10 (m³)</label><input id="jpc" type="number" step="any"></div>
+    <div><label>RCC-M20 (m³)</label><input id="jrc" type="number" step="any"></div>
+    <div><label>Steel (Kgs)</label><input id="jst" type="number" step="any"></div>
+    <div><label>Date of Backfilling</label><input id="jdb" type="date"></div>
+    <div><label>Volume of Backfilling (m³) = Excavation − PCC − RCC</label><input id="jvb" readonly></div>
+    <div><label>Date of Tower Erection</label><input id="jdt" type="date"></div>
+  </div>
+  <button id="jf" style="margin-top:12px">Fill from selected tower</button>
+  <button class="p" id="pj">Generate JMC PDF</button>
+  <button class="p" id="pr" style="margin-top:8px">Generate Royalty Statement PDF</button>
+  <div id="toast" class="toast"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+var D=[["DA","DFR","DA+0",2.61,82.6,10.2,1.58,88.6,10.03,5.01,[15.2,0,651.8,0,85.6,0,0,0],752.6,23.4],["DA","DFR","DA+3",2.61,82.6,10.2,1.58,88.6,10.03,5.01,[15.2,0,651.8,0,85.6,0,0,0],752.6,23.4],["DA","FS","DA+0",4.67,261.7,21.45,3.82,188.4,21.55,10.77,[44.8,0,1438.8,95.2,0,0,0,0],1578.8,43.32],["DA","FS","DA+3",4.67,261.7,21.45,3.82,188.4,21.55,10.77,[44.8,0,1438.8,95.2,0,0,0,0],1578.8,43.32],["DA","WBC","DA+0",5.4,350,28.72,5.2,252.6,28.93,14.45,[45.6,0,1826,95.2,0,0,0,0],1966.8,47.52],["DA","WBC","DA+3",5.4,350,28.72,5.2,252.6,28.93,14.45,[45.6,0,1826,95.2,0,0,0,0],1966.8,47.52],["DA","Wet","DA+0",3.77,167.85,17.84,2.37,153.1,17.18,8.58,[45.75,0,716.76,94.98,0,0,0,0],857.5,43.77],["DA","Wet","DA+3",3.77,167.85,17.84,2.37,153.1,17.18,8.58,[45.75,0,716.76,94.98,0,0,0,0],857.5,43.77],["DA","WFR","DA+0",3.53,151.51,21.05,2.93,181.3,20.39,10.19,[45.74,0,943.65,94.98,0,0,0,0],1084.4,30.12],["DA","WFR","DA+3",3.53,151.51,21.05,2.93,181.3,20.39,10.19,[45.74,0,943.65,94.98,0,0,0,0],1084.4,30.12],["DA","PS","DA+0",4.22,213.7,19.57,3.07,170.1,19.28,9.63,[45.6,0,993.2,95.2,0,0,0,0],1134,43.38],["DA","PS","DA+3",4.22,213.7,19.57,3.07,170.1,19.28,9.63,[45.6,0,993.2,95.2,0,0,0,0],1134,43.38],["DA","DFR","DA+6",2.63,83.87,10.64,1.6,92.2,10.42,5.2,[15.2,0,663.6,0,85.6,0,0,0],764.4,23.97],["DA","DFR","DA+9",2.63,83.87,10.64,1.6,92.2,10.42,5.2,[15.2,0,663.6,0,85.6,0,0,0],764.4,23.97],["DA","WBC","DA+6",5.42,352.52,28.99,5.24,255.0,29.19,14.59,[45.6,0,1868.4,95.2,0,0,0,0],2009.2,47.78],["DA","WBC","DA+9",5.42,352.52,28.99,5.24,255.0,29.19,14.59,[45.6,0,1868.4,95.2,0,0,0,0],2009.2,47.78],["DA","Wet","DA+6",3.76,169.65,17.81,2.39,153.0,17.17,8.58,[45.6,0,734.4,95.2,0,0,0,0],875.2,43.71],["DA","Wet","DA+9",3.76,169.65,17.81,2.39,153.0,17.17,8.58,[45.6,0,734.4,95.2,0,0,0,0],875.2,43.71],["DA","SFR","DA+0",4.41,234.81,24.8,4.25,217.1,24.76,12.37,[45.6,0,1451.6,95.2,0,0,0,0],1592.4,31.48],["DA","SFR","DA+3",4.41,234.81,24.8,4.25,217.1,24.76,12.37,[45.6,0,1451.6,95.2,0,0,0,0],1592.4,31.48],["DA","FS","DA+6",4.71,266,21.85,3.89,191.9,21.95,10.97,[44.8,0,1444.4,95.2,0,0,0,0],1584.4,43.56],["DA","FS","DA+9",4.71,266,21.85,3.89,191.9,21.95,10.97,[44.8,0,1444.4,95.2,0,0,0,0],1584.4,43.56],["DA","WFR","DA+6",3.56,154.08,21.84,2.98,187.8,21.1,10.54,[45.6,0,978.4,95.2,0,0,0,0],1119.2,30.68],["DA","WFR","DA+9",3.56,154.08,21.84,2.98,187.8,21.1,10.54,[45.6,0,978.4,95.2,0,0,0,0],1119.2,30.68],["DB","WBC","DB+0",7.9,748.92,75.31,11.55,653.3,73.93,36.94,[46.8,0,2637.6,2504,0,268,0,0],5456.4,82.71],["DB","WBC","DB+3",7.9,748.92,75.31,11.55,653.3,73.93,36.94,[46.8,0,2637.6,2504,0,268,0,0],5456.4,82.71],["DB","WBC","DB+6",7.9,749,87.98,11.55,754.7,84.58,42.26,[50.8,0,546,5003.12,84,131.6,0,0],5815.5,83.26],["DB","WBC","DB+9",7.9,749,87.98,11.55,754.7,84.58,42.26,[50.8,0,546,5003.12,84,131.6,0,0],5815.5,83.26],["DB","SFR","DB+6",6.85,566.84,72.43,10.22,624.4,70.28,35.12,[54.4,0,2511.6,2704.4,83.94,139.6,0,0],5493.9,50.98],["DB","SFR","DB+9",6.85,566.84,72.43,10.22,624.4,70.28,35.12,[54.4,0,2511.6,2704.4,83.94,139.6,0,0],5493.9,50.98],["DB","DFR","DB+6",4.41,235.83,35.62,4.44,304.5,34.02,17.0,[36.4,0,1198,1244.4,0,279.2,0,0],2758,41.08],["DB","DFR","DB+9",4.41,235.83,35.62,4.44,304.5,34.02,17.0,[36.4,0,1198,1244.4,0,279.2,0,0],2758,41.08],["DB","DFR","DB+0",4.4,233.96,31.86,4.42,274.3,30.85,15.41,[36.4,0,1194.4,1143.6,0,263.2,0,0],2637.6,41.71],["DB","DFR","DB+3",4.4,233.96,31.86,4.42,274.3,30.85,15.41,[36.4,0,1194.4,1143.6,0,263.2,0,0],2637.6,41.71],["DB","PS","DB+0",6.58,519.56,62.16,7.89,532.0,59.5,29.74,[42.8,0,3394,0,0,263,0,0],3700,51.16],["DB","PS","DB+3",6.58,519.56,62.16,7.89,532.0,59.5,29.74,[42.8,0,3394,0,0,263,0,0],3700,51.16],["DB","PS","DB+6",6.6,522.72,61.23,7.94,524.8,58.77,29.37,[50.8,0,3475.2,0,84.04,137.6,0,0],3747.6,75.2],["DB","PS","DB+9",6.6,522.72,61.23,7.94,524.8,58.77,29.37,[50.8,0,3475.2,0,84.04,137.6,0,0],3747.6,75.2],["DB","WFR","DB+0",5.42,355.52,52.64,6.54,449.9,50.26,25.12,[42.8,0,2915.2,0,0,263.2,0,0],3221.2,49.24],["DB","WFR","DB+3",5.42,355.52,52.64,6.54,449.9,50.26,25.12,[42.8,0,2915.2,0,0,263.2,0,0],3221.2,49.24],["DB","SFR","DB+0",null,566.84,73.28,10.22,631.2,71.0,35.48,[49.86,0,2510.5,3011.76,0,270,0,0],5842.1,52.74],["DB","SFR","DB+3",null,566.84,73.28,10.22,631.2,71.0,35.48,[49.86,0,2510.5,3011.76,0,270,0,0],5842.1,52.74],["DB","WFR","DB+6",null,379.42,51.94,6.96,446.1,50.06,25.02,[53.88,0,1869.94,1734.43,0,282.56,0,0],3940.8,null],["DC","WBC","DC+0",8.58,883,100.71,13.71,866.0,97.26,48.6,[0,93.03,942,6909.2,0,262.4,220,0],8426.6,92.52],["DC","WBC","DC+3",8.58,883,100.71,13.71,866.0,97.26,48.6,[0,99.03,942,6909.2,0,262.4,220,0],8432.6,92.52],["DC","WBC","DC+6",8.58,883,100.71,13.71,866.0,97.26,48.6,[0,99.03,942,6909.2,0,262.4,220,0],8432.6,92.52],["DC","WBC","DC+9",8.58,883,100.71,13.71,866.0,97.26,48.6,[0,99.03,942,6909.2,0,262.4,220,0],8432.6,92.52],["DC","DFR","DC+6",4.9,291,45.24,5.41,385.7,43.0,21.49,[0,86.4,1534.8,1847.6,0,278.8,235.2,0],3982.8,null],["DC","DFR","DC+9",4.9,291,45.24,5.41,385.7,43.0,21.49,[0,86.4,1534.8,1847.6,0,278.8,235.2,0],3982.8,null],["DC","DFR","DC+0",4.88,288,43.97,5.37,375.4,41.9,20.94,[0,86.4,1542.4,1840.4,0,262.22,219.89,0],3951.3,48.15],["DC","DFR","DC+3",4.88,288,43.97,5.37,375.4,41.9,20.94,[0,86.4,1542.4,1840.4,0,262.22,219.89,0],3951.3,48.15],["DC","WFR","DC+0",null,479.95,77.02,8.71,654.5,72.74,36.35,[0,85.64,2229.91,3054.48,0,261.58,219.86,0],5851.5,58.36],["DD","PS","DD+0",8.06,780,112.33,12.04,951.6,105.48,52.72,[0,76.4,0,6764,0,0,417.6,0],7258,99.69],["DD","PS","DD+3",8.06,780,112.33,12.04,951.6,105.48,52.72,[0,76.4,0,6764,0,0,417.6,0],7258,99.69],["DD","PS","DD+6",8.07,781,113.57,12.07,961.7,106.55,53.25,[0,76.4,0,6792.4,0,0,417.6,0],7286.4,null],["DD","PS","DD+9",8.07,781,113.57,12.07,961.7,106.55,53.25,[0,76.4,0,6792.4,0,0,417.6,0],7286.4,null],["DD","DFR","DD+0",5.39,354,63.34,6.84,536.8,59.53,29.75,[0,0,0,0,0,0,0,0],null,48.7],["DD","DFR","DD+3",5.39,354,63.34,6.84,536.8,59.53,29.75,[0,76.4,356.4,3970.4,0,0,427.2,0],4830.4,48.7],["DD","DFR","DD+6",5.42,358,66.14,6.91,559.5,61.94,30.96,[0,76.4,0,4190,0,0,427.2,0],4693.6,50.36],["DD","DFR","DD+9",5.42,358,66.14,6.91,559.5,61.94,30.96,[0,76.4,0,4190,0,0,427.2,0],4693.6,50.36],["DD","WBC","DD+0",9.43,1067,141.47,16.67,1205.1,134.24,67.09,[0,83.6,0,10406.8,0,0,208.8,273.2],10972.4,105.67],["DD","WBC","DD+3",9.43,1067,141.47,16.67,1205.1,134.24,67.09,[0,83.6,0,10406.8,0,0,208.8,273.2],10972.4,105.67],["DD","WBC","DD+6",9.43,1067,140.92,16.67,1200.7,133.78,66.85,[0,83.6,512.4,9837.6,0,0,417.6,0],10851.2,105.34],["DD","WBC","DD+9",9.43,1067,140.92,16.67,1200.7,133.78,66.85,[0,83.6,512.4,9837.6,0,0,417.6,0],10851.2,105.34],["DD","FS","DD+6",null,950.52,130.25,14.79,1107.1,123.08,61.51,[0,75.44,0,8874.36,0,0,417.6,0],9367.4,null],["DD","FS","DD+9",null,950.52,130.25,14.79,1107.1,123.08,61.51,[0,75.44,0,8874.36,0,0,417.6,0],9367.4,null],["DD","SFR","DD+25",8.32,835.23,132.24,14.86,1123.3,124.81,62.38,[0,76.4,0,8305.6,0,0,424,0],8806,71.19],["DD","Wet Soil","DD+18",7.35,648.27,94.56,9.94,800.2,88.61,44.29,[0,76.4,0,5574.4,0,0,417.6,0],6068.4,93.44],["DD","DFR","DD+18",5.39,354,63.89,6.84,541.2,59.99,29.98,[0,76.5,406,3990,0,0,427.2,0],4899.7,49.02],["DD","DFR","DD+25",5.39,354,63.89,6.84,541.2,59.99,29.98,[0,76.58,406,4030.8,0,0,427.2,0],4940.6,49.02],["DD","WBC","DD+25",9.43,1067,141.98,16.67,1209.2,134.67,67.3,[0,76.5,0,10462.8,0,0,417.6,0],10956.9,106.1],["DD","FS","DD+25",8.73,915,118.29,14.21,1008.8,112.49,56.22,[8901.6,76.4,0,8414.4,0,0,410.08,0],8901.6,99.51],["DD","SFR","DD+18 BE",8.32,835.23,132.24,14.86,1123.3,124.81,62.38,[0,76.4,0,8305.6,0,0,410.08,0],8792.1,71.19],["DD","WFR","DD+0",null,575.79,99.49,10.36,841.5,93.14,46.55,[0,75.44,0,6248.51,0,0,434.28,0],6758.2,55.74],["DD","WFR","DD+6",6.61,530.94,86.56,10,736.5,81.95,40.96,[0,76.3,0,6105.6,0,0,410.4,0],6592.3,49.84],["DD","WFR","DD+9",6.61,530.94,86.56,10,736.5,81.95,40.96,[0,76.3,0,6105.6,0,0,410.4,0],6592.3,49.84],["DD","WFR","DD+18",6.71,543.98,94.82,9.83,801.8,88.73,44.35,[0,76.4,0,5619.2,0,0,410.04,0],6105.6,66.23],["DD","WBC","DD+18",9.43,1067,141.98,16.67,1209.2,134.67,67.3,[0,76.42,0,10462.8,0,0,417.6,0],10956.8,106.1]];
+var C={sM10:0.56,jM10:0.69,sM20:0.46,jM20:0.69,sMT:1.72,jMT:1.80};
+var $=function(i){return document.getElementById(i)};
+var f=function(n,d){return n.toFixed(d===undefined?2:d)};
+var L=[];
+function showToast(msg){var t=$('toast');t.textContent=msg;t.style.display='block';setTimeout(function(){t.style.display='none';},4000);}
+function uniq(a){return a.filter(function(v,i){return a.indexOf(v)===i})}
+function fill(el,arr){el.innerHTML=arr.map(function(v){return '<option>'+v+'</option>'}).join('')}
+function found(){var t=$('ty').value;fill($('fd'),uniq(D.filter(function(r){return r[0]===t}).map(function(r){return r[1]})));exts()}
+function exts(){var t=$('ty').value,g=$('fd').value;fill($('ex'),D.filter(function(r){return r[0]===t&&r[1]===g}).map(function(r){return r[2]}));pv()}
+function cur(){var t=$('ty').value,g=$('fd').value,e=$('ex').value;return D.filter(function(r){return r[0]===t&&r[1]===g&&r[2]===e})[0]}
+function pv(){var r=cur();if(!r)return;
+$('pv').innerHTML='Per tower: Excavation '+r[4]+' Cmtr · RCC M20 '+r[5]+' · PCC M10 '+r[6]+' Cmtr · Cement '+r[7]+' bags · Steel '+(r[11]===null?'N/A':r[11]+' Kg')+' · Shuttering '+(r[12]===null?'N/A':r[12]+' Sqm')}
+function tot(){var s=[0,0,0,0,0,0,0,0],na=[];
+L.forEach(function(x){var r=x.r,n=x.n;s[0]+=r[4]*n;s[1]+=r[5]*n;s[2]+=r[6]*n;s[3]+=r[7]*n;s[4]+=r[8]*n;s[5]+=r[9]*n;
+if(r[11]===null)na.push(r[2]+' '+r[1]+' steel');else s[6]+=r[11]*n;
+if(r[12]===null)na.push(r[2]+' '+r[1]+' shuttering');else s[7]+=r[12]*n});
+$('T0').textContent=f(s[0]);$('T1').textContent=f(s[1]);$('T2').textContent=f(s[2]);$('T3').textContent=Math.round(s[3]);
+$('T4').textContent=f(s[4]);$('T5').textContent=f(s[5]);$('T6').textContent=f(s[6],1);$('T7').textContent=f(s[6]/1000,3);$('T8').textContent=f(s[7]);
+$('na').textContent=na.length?'Not available in sheet: '+uniq(na).join(', ')+' (not included in totals).':'';
+$('lc').style.display=L.length?'block':'none';
+$('lb').innerHTML=L.map(function(x,i){return '<tr><td>'+x.r[0]+'</td><td>'+x.r[1]+'</td><td>'+x.r[2]+'</td><td>'+x.n+'</td><td><button class="x" data-i="'+i+'">✕</button></td></tr>'}).join('');
+$('pcc').value=L.length?f(s[2],3):'';$('rcc').value=L.length?f(s[1],3):'';calc()}
+function calc(){
+  var p=parseFloat($('pcc').value)||0,r=parseFloat($('rcc').value)||0;
+  var s1=p*C.sM10,j1=p*C.jM10,s2=r*C.sM20,j2=r*C.jM20,S=s1+s2,J=j1+j2;
+  $('a1').textContent=$('a2').textContent=p.toFixed(3);$('a3').textContent=$('a4').textContent=r.toFixed(3);
+  $('r1').textContent=f(s1);$('r2').textContent=f(j1);$('r3').textContent=f(s2);$('r4').textContent=f(j2);
+  $('tS').textContent=f(S);$('tJ').textContent=f(J);
+  $('tSm').textContent=$('sMT').textContent=f(S*C.sMT);$('tJm').textContent=$('jMT').textContent=f(J*C.jMT)}
+fill($('ty'),uniq(D.map(function(r){return r[0]})));
+$('ty').onchange=found;$('fd').onchange=exts;$('ex').onchange=pv;
+$('add').onclick=function(){var n=parseInt($('no').value)||0,r=cur();if(!r||n<1)return;
+  var k=L.filter(function(x){return x.r===r})[0];if(k)k.n+=n;else L.push({r:r,n:n});tot()};
+$('lb').onclick=function(e){var i=e.target.getAttribute('data-i');if(i!==null){L.splice(+i,1);tot()}};
+$('pcc').oninput=calc;$('rcc').oninput=calc;
+$('rs').onclick=function(){document.querySelectorAll('input:not(#jap):not(#no)').forEach(function(e){e.value=''});L=[];tot();$('pcc').value='';$('rcc').value='';calc()};
+found();tot();
+
+var SO=['NDS/BC','WBC/PSS/FSS/WET','DFR/SFR/WFR (up to 1.5 mtr.)','DFR/SFR/WFR (from 1.5 mtr. To 3.0 mtr)','HR (up to 1.5 mtr.)','HR (from 1.5 mtr. To 3.0 mtr)'],PD=['A','B','C','D'];
+(function(){var h='<thead><tr><th>Pit Depth</th>'+SO.map(function(s){return '<th style="white-space:normal;min-width:72px">'+s+'</th>'}).join('')+'<th style="white-space:normal">Total Depth in Meters</th></tr></thead><tbody>';
+PD.forEach(function(p,r){h+='<tr><td>'+p+'</td>';for(var c=0;c<6;c++)h+='<td><input class="dd" data-r="'+r+'" data-c="'+c+'" type="number" step="any" style="padding:6px;font-size:14px"></td>';h+='<td id="rt'+r+'">0.00</td></tr>'});
+h+='<tr class="t"><td>Total depth</td>';for(var c=0;c<6;c++)h+='<td id="ct'+c+'">0.00</td>';h+='<td id="gt">0.00</td></tr><tr class="t"><td>Total Excavation (Cmtr)</td>';
+for(var c=0;c<6;c++)h+='<td id="ec'+c+'">0.00</td>';h+='<td id="eg">0.00</td></tr></tbody>';$('dt').innerHTML=h})();
+function dv(){var m=[[],[],[],[]];document.querySelectorAll('.dd').forEach(function(e){m[+e.dataset.r][+e.dataset.c]=parseFloat(e.value)||0});return m}
+function dsum(){var m=dv(),ct=[0,0,0,0,0,0],g=0,rt=[],te=parseFloat($('jte').value)||0,ec=[];
+m.forEach(function(row,r){var s=0;row.forEach(function(v,c){s+=v;ct[c]+=v});rt[r]=s;g+=s});
+ct.forEach(function(v,c){ec[c]=g>0?te*v/g:0});
+rt.forEach(function(v,r){$('rt'+r).textContent=f(v)});ct.forEach(function(v,c){$('ct'+c).textContent=f(v);$('ec'+c).textContent=f(ec[c])});
+$('gt').textContent=f(g);$('eg').textContent=f(g>0?te:0);
+var bf=te-(parseFloat($('jpc').value)||0)-(parseFloat($('jrc').value)||0);$('jvb').value=te?f(bf):'';
+return{m:m,rt:rt,ct:ct,g:g,ec:ec,te:te}}
+document.querySelectorAll('.dd,#jte,#jpc,#jrc').forEach(function(e){e.oninput=dsum});
+$('jf').onclick=function(){var r=cur();if(!r)return;$('jt').value=r[2]+' / '+r[1];$('jsc').value=r[1];$('jte').value=r[4];$('jpc').value=r[6];$('jrc').value=r[5];$('jst').value=r[11]===null?'':r[11];dsum()};
+function dd(v){if(!v)return '';var p=v.split('-');return p[2]+'-'+p[1]+'-'+p[0]}
+function G(){if(!window.jspdf){showToast('PDF library not loaded. Please connect to the internet and try again.');return null}return new window.jspdf.jsPDF({unit:'mm',format:'a4'})}
+function box(d,x,y,w,h,t,b,c){d.rect(x,y,w,h);if(t!==''&&t!==undefined){d.setFont('helvetica',b?'bold':'normal');var l=d.splitTextToSize(String(t),w-2),ty=y+(c?(h-l.length*3.4)/2+2.7:4);d.text(l,c?x+w/2:x+1,ty,c?{align:'center'}:{})}}
+function head(d){d.setFont('helvetica','bold');d.setFontSize(14);d.text('KARNATAKA POWER TRANSMISSION CORPORATION LIMITED',105,16,{align:'center'});d.setFontSize(10);d.text('Projects Sub-Division, Hospet (Vijayanagar dist)',105,23,{align:'center'});d.setFont('helvetica','normal');d.setFontSize(9)}
+var WORK='Conversion of existing 400kV SC line to 400kV DC QUAD MOOSE line between BTPS to Guttur for length of 142 kms.';
+$('pj').onclick=function(){var d=G();if(!d)return;var s=dsum(),y=34;head(d);
+d.setFont('helvetica','bold');d.text('Name of the work:',15,y);var wd=d.getTextWidth('Name of the work: ');d.setFont('helvetica','normal');
+var wl=d.splitTextToSize(WORK,180-wd);d.text(wl[0],15+wd,y);var rest=d.splitTextToSize(WORK.slice(wl[0].length).trim(),180);d.text(rest,15,y+6);y+=6+rest.length*5+3;
+d.setFont('helvetica','bold');d.text('Name of the agency: ',15,y);d.setFont('helvetica','normal');d.text($('jag').value||'M/s Megha Engineering & Infrastructures Ltd, Hyderabad',15+d.getTextWidth('Name of the agency: '),y);y+=10;
+d.setFont('helvetica','bold');d.setFontSize(10);d.text('I. Soil Classification',15,y);d.setFont('helvetica','normal');d.setFontSize(9);y+=8;
+d.text('1. Location No: - '+$('jl').value,15,y);d.text('2. Type of Tower: - '+$('jt').value,70,y);d.text('3. Date of Excavation:- '+dd($('jde').value),135,y);y+=8;
+d.text('4. Soil Classified As: - '+$('jsc').value,15,y);d.text('5. Soil Classification Approved by: - '+$('jap').value,80,y);y+=8;
+d.text('6. Date of Approval: - '+dd($('jda').value),15,y);y+=7;
+d.setFont('helvetica','bold');d.text('Depth excavated in various types of Soil',15,y);y+=3;d.setFontSize(7.5);
+var w=[16,14,20,28,28,22,24,28],x=15,H=['Pit Depth','NDS/ BC','WBC / PSS/ FSS/ WET',SO[2],SO[3],SO[4],SO[5],'Total Depth in Meters'];
+w.forEach(function(wi,i){box(d,x,y,wi,20,H[i],0,1);x+=wi});y+=20;
+var nz=function(v){return v?f(v):''};
+PD.forEach(function(p,r){x=15;var row=[p].concat(s.m[r].map(nz)).concat([nz(s.rt[r])]);w.forEach(function(wi,i){box(d,x,y,wi,8,row[i],0,i===0);x+=wi});y+=8});
+var tr=[['Total depth'].concat(s.ct.map(nz)).concat([nz(s.g)]),['Total Excavation'].concat(s.ec.map(nz)).concat([s.g?f(s.te):''])],hh=[10,12];
+tr.forEach(function(row,k){x=15;w.forEach(function(wi,i){box(d,x,y,wi,hh[k],row[i],i>0&&0,i===0);x+=wi});y+=hh[k]});
+y+=14;d.setFontSize(8.5);d.setFont('helvetica','normal');
+d.text('Executive Engineer (Ele)',15,y);var agText=$('jag').value||'M/s Megha Engineering & Infrastructures Ltd,';d.text(agText,195,y,{align:'right'});y+=5;
+d.text('Projects Division',15,y);if(agText.indexOf('Hyderabad')===-1)d.text('Hyderabad',195,y,{align:'right'});y+=5;d.text('KPTCL, Ballari.',15,y);y+=12;
+d.setFont('helvetica','bold');d.setFontSize(10);d.text('II. Foundation & Erection details.',15,y);y+=4;d.setFontSize(8);
+var cw=[36,24,36,28,28,28],X=function(i){return 15+cw.slice(0,i).reduce(function(a,b){return a+b},0)};
+var r1=['Date of Concreting:-',dd($('jdc').value),'Volume of Concreting:-','PCC-M10 in (m3)','RCC-M20 in (m3)','Steel in Kgs'];
+r1.forEach(function(c,i){box(d,X(i),y,cw[i],10,c,0,i>2)});y+=10;
+['','','',$('jpc').value,$('jrc').value,$('jst').value].forEach(function(c,i){box(d,X(i),y,cw[i],9,c,0,i>2)});y+=9;
+box(d,15,y,60,10,'Date of Inspection of concreting:-');box(d,75,y,24,10,dd($('jdi').value));box(d,99,y,60,10,'Date of Backfilling:-');box(d,159,y,36,10,dd($('jdb').value));y+=10;
+box(d,15,y,60,10,'Date of Tower Erection:-');box(d,75,y,24,10,dd($('jdt').value));box(d,99,y,60,10,'Volume of Backfilling');box(d,159,y,36,10,$('jvb').value);y+=24;
+d.setFont('helvetica','normal');d.setFontSize(8.5);
+d.text('Assistant Engineer(Ele)',15,y);d.text('Assistant Executive Engineer(Ele)',75,y);d.text(agText,195,y,{align:'right'});y+=5;
+d.text('Projects Sub Division',15,y);d.text('Projects Sub Division',75,y);if(agText.indexOf('Hyderabad')===-1)d.text('Hyderabad',195,y,{align:'right'});y+=5;
+d.text('KPTCL Hospet',15,y);d.text('KPTCL Hospet',75,y);
+d.save('JMC_Loc_'+($('jl').value||'NA')+'.pdf')};
+$('pr').onclick=function(){var d=G();if(!d)return;head(d);var y=30;
+d.setFont('helvetica','bold');d.setFontSize(11);d.text('Royalty Calculation – Statement of minerals utilised',105,y,{align:'center'});d.setFontSize(9);y+=8;d.setFont('helvetica','normal');
+d.text(d.splitTextToSize('Name of work: '+WORK,180),15,y);y+=11;if($('jag').value){d.text('Name of agency: '+$('jag').value,15,y);y+=7}
+var p=parseFloat($('pcc').value)||0,r=parseFloat($('rcc').value)||0,s1=p*C.sM10,j1=p*C.jM10,s2=r*C.sM20,j2=r*C.jM20,S=s1+s2,J=j1+j2;
+var R=[['Sl.','Particulars','Concrete (Cmtr)','Const./Cmt','Qty (Cmtr)'],['i','PCC 1:3:6 (M10)',p.toFixed(3),'',''],['','a) Sand','','0.56',f(s1)],['','b) Jelly','','0.69',f(j1)],['iii','RCC 1:1.5:3 (M20)',r.toFixed(3),'',''],['','a) Sand','','0.46',f(s2)],['','b) Jelly','','0.69',f(j2)],['','TOTAL SAND','',f(S)+' Cmtr',f(S*C.sMT)+' MT'],['','TOTAL JELLY','',f(J)+' Cmtr',f(J*C.jMT)+' MT']];
+var w=[12,60,38,34,36];R.forEach(function(row,i){var x=15;row.forEach(function(c,k){box(d,x,y,w[k],8,c,i===0||i>6);x+=w[k]});y+=8});
+y+=20;d.text('Executive Engineer (Ele), KPTCL',15,y);d.text('Agency Representative',140,y);d.save('Royalty_Statement.pdf')};
+</script>
+</body>
+</html>
